@@ -2,32 +2,11 @@
   // An array of transaction objects.
   // Square brackets. Each item is a full object. Commas between items.
   // Each transaction has a unique id so Svelte can track it efficiently in the list.
-  let transactions = $state([
-    {
-      id: 1,
-      date: '2026-04-01',
-      description: 'Opening cash deposit',
-      debit: 'Cash',
-      credit: "Owner's Equity",
-      amount: 5000
-    },
-    {
-      id: 2,
-      date: '2026-04-03',
-      description: 'Consulting fee from client',
-      debit: 'Cash',
-      credit: 'Revenue',
-      amount: 1200
-    },
-    {
-      id: 3,
-      date: '2026-04-05',
-      description: 'April rent',
-      debit: 'Rent Expense',
-      credit: 'Cash',
-      amount: 800
-    }
-  ]);
+  // data comes from +page.server.js via the load() function.
+let { data } = $props();
+
+// Wrap the array in $state so the totals below can react to it.
+let transactions = $state(data.transactions);
   function classify(t) {
     if (t.credit === 'Revenue') {
         return 'Revenue';
@@ -128,19 +107,19 @@ let netIncome = $derived(totalRevenue - totalExpenses);
     <div class="space-y-2">
     <div class="flex justify-between text-emerald-700 font-medium">
         <span>Total Revenue</span>
-        <span>${totalRevenue.toFixed(2)}</span>
+        <span>${Number(totalRevenue).toFixed(2)}</span>
     </div>
 
     <div class="flex justify-between text-rose-700 font-medium">
         <span>Total Expenses</span>
-        <span>${totalExpenses.toFixed(2)}</span>
+        <span>${Number(totalExpenses).toFixed(2)}</span>
     </div>
 
     <div class="flex justify-between border-t border-slate-300 pt-2 text-lg font-bold">
         <span>Net Income</span>
 
         <span class={netIncome >= 0 ? 'text-emerald-700' : 'text-rose-700'}>
-            ${netIncome.toFixed(2)}
+            ${Number(netIncome).toFixed(2)}
         </span>
     </div>
 </div>
@@ -169,7 +148,7 @@ let netIncome = $derived(totalRevenue - totalExpenses);
       <td class="px-3 py-2">{t.description}</td>
       <td class="px-3 py-2">{t.debit}</td>
       <td class="px-3 py-2">{t.credit}</td>
-      <td class="px-3 py-2 text-right">${t.amount.toFixed(2)}</td>
+      <td class="px-3 py-2 text-right">${Number(t.amount).toFixed(2)}</td>
       <td class="px-3 py-2">
     {#if classify(t) === 'Revenue'}
         <span class="text-emerald-700 font-medium">Revenue</span>
